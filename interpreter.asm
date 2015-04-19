@@ -145,13 +145,20 @@ read_program:
 	je		error
 	add		esp, 0x8
 
-
 	mov		eax, [esp]		; get pointer to read-in byte
 	mov		al, [eax]		; store read-in byte in al
 	mov		ebx, [prog_ptr]	; get program pointer
 	mov		[ebx], al		; put read-in byte in current program array position
 	
 	inc		dword [prog_ptr]; increase program pointer by one
+
+	; handle error
+	push	prog_ovfl.l
+	push	prog_ovfl
+	cmp		[prog_ptr], memo_arr
+	jae		error
+	add		esp, 0x8
+
 	jmp		.read			; continue reading
 
 .done_read:
@@ -259,10 +266,26 @@ execute_program:
 
 .inc_ptr:					; handle '>'
 	inc		dword [memo_ptr]; increase memory pointer by one
+
+	; handle error
+	push	memo_ovfl.l
+	push	memo_ovfl
+	cmp		[memo_ptr], prog_ptr
+	jae		error
+	add		esp, 0x8
+
 	jmp		.continue
 
 .dec_ptr:					; handle '<'
 	dec		dword [memo_ptr]; decrease memory pointer by one
+
+	; handle error
+	push	illg_ptr.l
+	push	illg_ptr
+	cmp		[memo_ptr], memo_arr
+	jb		error
+	add		esp, 0x8
+
 	jmp		.continue
 
 .inc_val:					; handle '+'
@@ -401,17 +424,29 @@ match_forward:
 .step_forward:
 	; get next instruction
 	inc		dword [prog_ptr]; move instruction one step forward
+
+
+
 	mov		ebx, [prog_ptr]	; get pointer to current instruction
 	mov		bl, [ebx]		; get instruction
 	
 	mov		dh, [jmp_fwd]	; get '['
 	mov		dl, [jmp_bck]	; get ']'
+	mov		al, [end_sign]	; get '#'
 
 	; compare instruction with '[' and ']'
 	cmp		bl, dh
 	je		.found_jf
 	cmp		bl, dl
 	je		.found_jb
+
+	; handle error
+	push	no_match.l
+	push	no_match
+	cmp		bl, al
+	je		error
+	add		esp, 0x8
+
 	jmp		.step_forward
 
 .found_jf:
@@ -462,6 +497,14 @@ match_back:
 	je		.found_jf
 	cmp		bl, dl
 	je		.found_jb
+
+	; handle error
+	push	no_match.l
+	push	no_match
+	cmp		[prog_ptr], prog_arr
+	jb		error
+	add		esp, 0x8
+
 	jmp		.step_back
 
 .found_jf:
