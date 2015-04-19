@@ -6,8 +6,8 @@ all: $(OUTPUTS)
 interpreter: $(OBJECTS)
 	ld -melf_i386 interpreter.o -o $@
 
-interpreter.o: interpreter.asm
-	nasm -f elf interpreter.asm
+interpreter.o: interpreter.s
+	nasm -f elf interpreter.s
 
 clean:
 	rm -f $(OBJECTS) $(OUTPUTS)
