@@ -36,8 +36,8 @@ section .data				; read-write data section
 
 section .bss				; storage section
 	buffer 		resb 1		; one byte read buffer
-	prog_arr	resb 200	; reserved program array
-	memo_arr	resb 200	; reserved memory array
+	prog_arr	resb 500	; reserved program array
+	memo_arr	resb 500	; reserved memory array
 	prog_ptr	resd 1		; program pointer
 	memo_ptr	resd 1		; memory pointer
 
@@ -48,7 +48,7 @@ _start:						; program entry point
 	mov		ebp, esp
 
 	call	read_program	; read program from console
-	call	write_program	; write program to console
+	;call	write_program	; write program to console
 	call	execute_program	; execute program
 	
 	; exit program
@@ -138,11 +138,11 @@ read_program:
 	cmp		eax, 2
 	je		.done_read		; done reading if end instruction is found
 
-	; handle error
+	; handle error of unrecognized instruction
 	push	unrec.l
 	push	unrec
 	cmp		eax, 3
-	je		error
+	je		.error
 	add		esp, 0x8
 
 	mov		eax, [esp]		; get pointer to read-in byte
@@ -152,11 +152,11 @@ read_program:
 	
 	inc		dword [prog_ptr]; increase program pointer by one
 
-	; handle error
+	; handle error of program array overflow
 	push	prog_ovfl.l
 	push	prog_ovfl
-	cmp		[prog_ptr], memo_arr
-	jae		error
+	cmp		dword [prog_ptr], memo_arr
+	jae		.error
 	add		esp, 0x8
 
 	jmp		.read			; continue reading
@@ -166,12 +166,8 @@ read_program:
 	mov		al, [end_sign]	; get end sign
 	mov		[ebx], al		; put end sign at the end of program array
 
-.clear_remainder:
-	call	read_byte		; read in redundant characters after end sign
-	cmp		byte [eax], 0xa	; check \n
-	jne		.clear_remainder; repeat if not \n
+	call	clear_input
 
-.done_clear:
 	; restore ebx, esi, edi
 	mov		edi, [ebp-0xc]
 	mov		esi, [ebp-0x8]
@@ -180,6 +176,10 @@ read_program:
 	; restore caller's stack frame and return
 	leave
 	ret
+
+.error:
+	call	clear_input
+	jmp		error
 
 write_program:
 	; save and set up stack frame
@@ -267,11 +267,11 @@ execute_program:
 .inc_ptr:					; handle '>'
 	inc		dword [memo_ptr]; increase memory pointer by one
 
-	; handle error
+	; handle error of memory overflow
 	push	memo_ovfl.l
 	push	memo_ovfl
-	cmp		[memo_ptr], prog_ptr
-	jae		error
+	cmp		dword [memo_ptr], prog_ptr
+	jae		.error
 	add		esp, 0x8
 
 	jmp		.continue
@@ -279,11 +279,11 @@ execute_program:
 .dec_ptr:					; handle '<'
 	dec		dword [memo_ptr]; decrease memory pointer by one
 
-	; handle error
+	; handle error of illegal memory pointer
 	push	illg_ptr.l
 	push	illg_ptr
-	cmp		[memo_ptr], memo_arr
-	jb		error
+	cmp		dword [memo_ptr], memo_arr
+	jb		.error
 	add		esp, 0x8
 
 	jmp		.continue
@@ -343,6 +343,9 @@ execute_program:
 	; restore caller's stack frame and return
 	leave
 	ret
+
+.error:
+	jmp		error
 
 instruction_checker:		; check program instruction character
 							; return 0 for whitespace
@@ -425,8 +428,6 @@ match_forward:
 	; get next instruction
 	inc		dword [prog_ptr]; move instruction one step forward
 
-
-
 	mov		ebx, [prog_ptr]	; get pointer to current instruction
 	mov		bl, [ebx]		; get instruction
 	
@@ -440,7 +441,7 @@ match_forward:
 	cmp		bl, dl
 	je		.found_jb
 
-	; handle error
+	; handle error of no matching parenthese
 	push	no_match.l
 	push	no_match
 	cmp		bl, al
@@ -498,10 +499,10 @@ match_back:
 	cmp		bl, dl
 	je		.found_jb
 
-	; handle error
+	; handle error of no matching parenthese
 	push	no_match.l
 	push	no_match
-	cmp		[prog_ptr], prog_arr
+	cmp		dword [prog_ptr], prog_arr
 	jb		error
 	add		esp, 0x8
 
@@ -528,6 +529,31 @@ match_back:
 	leave
 	ret
 
+clear_input:
+	; save and set up stack frame
+	push	ebp
+	mov		ebp, esp
+							
+	; preserve ebx, esi, edi
+	push	ebx
+	push	esi
+	push	edi
+						
+	; function content
+.clear:
+	call	read_byte		; read in redundant input characters
+	cmp		byte [eax], 0xa	; check \n
+	jne		.clear			; repeat if not \n
+
+	; restore ebx, esi, edi
+	mov		edi, [ebp-0xc]
+	mov		esi, [ebp-0x8]
+	mov		ebx, [ebp-0x4]
+							
+	; restore caller's stack frame and return
+	leave
+	ret
+
 error:
 	mov		eax, 4			; method sys_write
 	mov		ebx, 1			; file descriptor (stdout)
@@ -536,7 +562,7 @@ error:
 	int		0x80			; system call
 
 	; exit program
-	mov		ebx, 0
+	mov		ebx, 1
 	mov		eax, 1
 	int		0x80
 
