@@ -11,6 +11,7 @@ section .bss
 	buffer 		resb 1
 	memo_arr	resb 500
 	memo_ptr	resd 1
+	boundary	resd 1
 section .text
 _start:
 	mov		ebp, esp
@@ -21,7 +22,7 @@ inc_ptr:					; handle '>'
 	inc		dword [memo_ptr]
 	push	memo_ovfl.l
 	push	memo_ovfl
-	cmp		dword [memo_ptr], prog_ptr
+	cmp		dword [memo_ptr], boundary
 	jae		error
 	add		esp, 0x8
 

@@ -18,9 +18,9 @@ int main(void) {
 	int p_pointer = 0;
 	int p_counter = 0;
 	int temp = 0;
-	char* head = "USE32\nglobal _start\nsection .rodata\nmemo_ovfl db 'Memory array overflow!'\nmemo_ovfl.l equ $ - memo_ovfl\nillg_ptr db 'Illegal memory pointer position!'\nillg_ptr.l equ $ - illg_ptr\nno_match db 'No matching parenthese!'\nno_match.l equ $ - no_match\nsection .bss\nbuffer resb 1\nmemo_arr resb 500\nmemo_ptr resd 1\nsection .text\n_start:\nmov ebp, esp\nmov eax, memo_arr\nmov [memo_ptr], eax\n";
+	char* head = "USE32\nglobal _start\nsection .rodata\nmemo_ovfl db 'Memory array overflow!'\nmemo_ovfl.l equ $ - memo_ovfl\nillg_ptr db 'Illegal memory pointer position!'\nillg_ptr.l equ $ - illg_ptr\nno_match db 'No matching parenthese!'\nno_match.l equ $ - no_match\nsection .bss\nbuffer resb 1\nmemo_arr resb 500\nmemo_ptr resd 1\nboundary resd 1\nsection .text\n_start:\nmov ebp, esp\nmov eax, memo_arr\nmov [memo_ptr], eax\n";
 	char* foot = "mov ebx, 0\nmov eax, 1\nint 0x80\nerror:\nmov eax, 4\nmov ebx, 1\npop ecx\npop edx\nint 0x80\nmov ebx, 1\nmov eax, 1\nint 0x80\n";
-	char* inc_ptr = "inc dword [memo_ptr]\npush	memo_ovfl.l\npush memo_ovfl\ncmp dword [memo_ptr], prog_ptr\njae error\nadd esp, 0x8\n";
+	char* inc_ptr = "inc dword [memo_ptr]\npush	memo_ovfl.l\npush memo_ovfl\ncmp dword [memo_ptr], boundary\njae error\nadd esp, 0x8\n";
 	char* dec_ptr = "dec dword [memo_ptr]\npush illg_ptr.l\npush illg_ptr\ncmp dword [memo_ptr], memo_arr\njb error\nadd esp, 0x8\n";
 	char* inc_val = "mov ebx, [memo_ptr]\ninc byte [ebx]\n";
 	char* dec_val = "mov ebx, [memo_ptr]\ndec byte [ebx]\n";
