@@ -23,8 +23,8 @@ int main(void) {
 	char* dec_val = "mov ebx, [memo_ptr]\ndec byte [ebx]";
 	char* out_val = "push dword [memo_ptr]\nmov eax, 4\nmov ebx, 1\npop ecx\nmov edx, 1\nint	0x80\n";
 	char* in_val = "mov eax, 3\nmov ebx, 1\nmov ecx, buffer\nmov edx, 1\nint 0x80\nmov eax, buffer\nmov al, [eax]\nmov ebx, [memo_ptr]\nmov [ebx], al";
-	char* jmp_fwd = "";
-	char* jmp_bck = "";
+	char* jmp_fwd = ".loop:\nmov ebx, [memo_ptr]\nmov bl, [ebx]\ncmp bl, 0\nje .end_loop\n";
+	char* jmp_bck = "jmp .loop\n.end_loop:\n";
 	
 	while (temp != '#') {
 		temp = getchar();
