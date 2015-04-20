@@ -22,10 +22,10 @@ int main(void) {
 	char* foot = "mov ebx, 0\nmov eax, 1\nint 0x80\nerror:\nmov eax, 4\nmov ebx, 1\npop ecx\npop edx\nint 0x80\nmov ebx, 1\nmov eax, 1\nint 0x80\n";
 	char* inc_ptr = "inc dword [memo_ptr]\npush	memo_ovfl.l\npush memo_ovfl\ncmp dword [memo_ptr], prog_ptr\njae error\nadd esp, 0x8\n";
 	char* dec_ptr = "dec dword [memo_ptr]\npush illg_ptr.l\npush illg_ptr\ncmp dword [memo_ptr], memo_arr\njb error\nadd esp, 0x8\n";
-	char* inc_val = "mov ebx, [memo_ptr]\ninc byte [ebx]";
-	char* dec_val = "mov ebx, [memo_ptr]\ndec byte [ebx]";
+	char* inc_val = "mov ebx, [memo_ptr]\ninc byte [ebx]\n";
+	char* dec_val = "mov ebx, [memo_ptr]\ndec byte [ebx]\n";
 	char* out_val = "push dword [memo_ptr]\nmov eax, 4\nmov ebx, 1\npop ecx\nmov edx, 1\nint	0x80\n";
-	char* in_val = "mov eax, 3\nmov ebx, 1\nmov ecx, buffer\nmov edx, 1\nint 0x80\nmov eax, buffer\nmov al, [eax]\nmov ebx, [memo_ptr]\nmov [ebx], al";
+	char* in_val = "mov eax, 3\nmov ebx, 1\nmov ecx, buffer\nmov edx, 1\nint 0x80\nmov eax, buffer\nmov al, [eax]\nmov ebx, [memo_ptr]\nmov [ebx], al\n";
 	char* jmp_fwd_0 = ".loop_";
 	char* jmp_fwd_1 = ":\nmov ebx, [memo_ptr]\nmov bl, [ebx]\ncmp bl, 0\nje .end_loop_";
 	char* jmp_fwd_2 = "\n";
