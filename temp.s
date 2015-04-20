@@ -80,40 +80,27 @@ _start:
 	mov		ebx, 0
 	mov		eax, 1
 	int		0x80
-
 clear_input:
-	; save and set up stack frame
 	push	ebp
 	mov		ebp, esp
-							
-	; preserve ebx, esi, edi
 	push	ebx
 	push	esi
 	push	edi
-						
-	; function content
 .clear:
-	call	read_byte		; read in redundant input characters
-	cmp		byte [eax], 0xa	; check \n
-	jne		.clear			; repeat if not \n
-
-	; restore ebx, esi, edi
+	call	read_byte
+	cmp		byte [eax], 0xa
+	jne		.clear
 	mov		edi, [ebp-0xc]
 	mov		esi, [ebp-0x8]
 	mov		ebx, [ebp-0x4]
-							
-	; restore caller's stack frame and return
 	leave
 	ret
-
 error:
-	mov		eax, 4			; method sys_write
-	mov		ebx, 1			; file descriptor (stdout)
-	pop		ecx				; text to output
-	pop		edx				; output length
-	int		0x80			; system call
-
-	; exit program
+	mov		eax, 4
+	mov		ebx, 1
+	pop		ecx
+	pop		edx
+	int		0x80
 	mov		ebx, 1
 	mov		eax, 1
 	int		0x80
