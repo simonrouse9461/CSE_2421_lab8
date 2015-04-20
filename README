@@ -1,0 +1,8 @@
+CSE 2421
+lab8
+Name: Chuhan Feng
+Time taken: 40 hr
+Problems encountered:
+The array doesn't work when I initialize 10000000 length for it.
+I finally realized that this causes stack overflow, and I solved it
+by making it a static array.

@@ -7,8 +7,8 @@ all: $(OUTPUTS)
 interpreter: interpreter.o
 	ld -melf_i386 interpreter.o -o $@
 
-interpreter.o: interpreter.s
-	nasm -f elf interpreter.s -Ov
+interpreter.o: interpreter.asm
+	nasm -f elf interpreter.asm -Ov
 
 compiler: compiler.c
 	gcc -g -Wall compiler.c -o $@
