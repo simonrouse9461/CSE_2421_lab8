@@ -22,20 +22,8 @@ int main(void) {
 		counter++;
 	}
 	
-	counter = 0;
-	temp = 0;
-		
-	while (temp != '#') {
-		temp = instruction[counter];
-		putchar(temp);
-		counter++;
-	}
+	printf(head);
 	
 	
 	return 0;
-}
-
-char* read_program() {
-	
-	
 }
