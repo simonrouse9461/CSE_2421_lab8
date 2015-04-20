@@ -43,25 +43,25 @@ int main(void) {
 				printf(inc_ptr);
 				break;
 			case '<':
-				printf(inc_ptr);
+				printf(dec_ptr);
 				break;
 			case '+':
-				printf(inc_ptr);
+				printf(inc_val);
 				break;
 			case '-':
-				printf(inc_ptr);
+				printf(dec_val);
 				break;
 			case '.':
-				printf(inc_ptr);
+				printf(out_val);
 				break;
 			case ',':
-				printf(inc_ptr);
+				printf(in_val);
 				break;
 			case '[':
-				printf(inc_ptr);
+				printf(jmp_fwd);
 				break;
 			case ']':
-				printf(inc_ptr);
+				printf(jmp_bck);
 				break;
 			default:
 				break;
