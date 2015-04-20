@@ -36,8 +36,8 @@ section .data				; read-write data section
 
 section .bss				; storage section
 	buffer 		resb 1		; one byte read buffer
-	prog_arr	resb 500	; reserved program array
-	memo_arr	resb 500	; reserved memory array
+	prog_arr	resb 1000000	; reserved program array
+	memo_arr	resb 1000000	; reserved memory array
 	prog_ptr	resd 1		; program pointer
 	memo_ptr	resd 1		; memory pointer
 
