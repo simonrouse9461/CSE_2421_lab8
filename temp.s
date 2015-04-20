@@ -17,7 +17,7 @@ _start:
 	mov		eax, memo_arr
 	mov		[memo_ptr], eax
 
-.inc_ptr:					; handle '>'
+inc_ptr:					; handle '>'
 	inc		dword [memo_ptr]
 	push	memo_ovfl.l
 	push	memo_ovfl
@@ -25,7 +25,7 @@ _start:
 	jae		error
 	add		esp, 0x8
 
-.dec_ptr:					; handle '<'
+dec_ptr:					; handle '<'
 	dec		dword [memo_ptr]
 	push	illg_ptr.l
 	push	illg_ptr
@@ -33,15 +33,15 @@ _start:
 	jb		error
 	add		esp, 0x8
 
-.inc_val:					; handle '+'
+inc_val:					; handle '+'
 	mov		ebx, [memo_ptr]
 	inc		byte [ebx]
 
-.dec_val:					; handle '-'
+dec_val:					; handle '-'
 	mov		ebx, [memo_ptr]
 	dec		byte [ebx]
 
-.out_val:					; handle '.'
+out_val:					; handle '.'
 	push	dword [memo_ptr]
 	mov		eax, 4
 	mov		ebx, 1
@@ -49,7 +49,7 @@ _start:
 	mov		edx, 1
 	int		0x80
 
-.in_val:					; handle ','
+in_val:						; handle ','
 	mov		eax, 3			; method sys_read
 	mov		ebx, 1			; file descriptor (stdin)
 	mov		ecx, buffer		; read into buffer
@@ -60,21 +60,16 @@ _start:
 	mov		ebx, [memo_ptr]	; get memory pointer
 	mov		[ebx], al		; save byte in memory
 
-.jmp_fwd:
-	mov		ebx, [memo_ptr]	; get memory pointer
-	mov		bl, [ebx]		; get current memory value
-	cmp		bl, 0			; check if 0
-	jne		.continue
+jmp_fwd:
+.loop:
+	mov		ebx, [memo_ptr]
+	mov		bl, [ebx]
+	cmp		bl, 0
+	je		.end_loop
 
-	call	match_forward	; move instruction pointer to matching position
-
-.jmp_bck:
-	mov		ebx, [memo_ptr]	; get memory pointer
-	mov		bl, [ebx]		; get current memory value
-	cmp		bl, 0			; check if 0
-	je		.continue
-
-	call	match_back		; move instruction pointer to matching position
+jmp_bck:
+	jmp		.loop
+.end_loop:
 	
 	; exit program
 	mov		ebx, 0
