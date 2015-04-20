@@ -18,9 +18,7 @@ _start:
 	mov		[memo_ptr], eax
 
 .inc_ptr:					; handle '>'
-	inc		dword [memo_ptr]; increase memory pointer by one
-
-	; handle error of memory overflow
+	inc		dword [memo_ptr]
 	push	memo_ovfl.l
 	push	memo_ovfl
 	cmp		dword [memo_ptr], prog_ptr
@@ -28,9 +26,7 @@ _start:
 	add		esp, 0x8
 
 .dec_ptr:					; handle '<'
-	dec		dword [memo_ptr]; decrease memory pointer by one
-
-	; handle error of illegal memory pointer
+	dec		dword [memo_ptr]
 	push	illg_ptr.l
 	push	illg_ptr
 	cmp		dword [memo_ptr], memo_arr
@@ -38,21 +34,20 @@ _start:
 	add		esp, 0x8
 
 .inc_val:					; handle '+'
-	mov		ebx, [memo_ptr]	; get memory pointer
-	inc		byte [ebx]		; increase the value by one
+	mov		ebx, [memo_ptr]
+	inc		byte [ebx]
 
 .dec_val:					; handle '-'
-	mov		ebx, [memo_ptr]	; get memory pointer
-	dec		byte [ebx]		; decrease the value by one
+	mov		ebx, [memo_ptr]
+	dec		byte [ebx]
 
 .out_val:					; handle '.'
-	push	dword [memo_ptr]; get memory pointer
-	; output to console
-	mov		eax, 4			; method sys_write
-	mov		ebx, 1			; file descriptor (stdout)
-	pop		ecx				; text to output
-	mov		edx, 1			; output length
-	int		0x80			; system call
+	push	dword [memo_ptr]
+	mov		eax, 4
+	mov		ebx, 1
+	pop		ecx
+	mov		edx, 1
+	int		0x80
 
 .in_val:					; handle ','
 	mov		eax, 3			; method sys_read

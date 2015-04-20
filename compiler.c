@@ -15,15 +15,59 @@ int main(void) {
 	int instruction[MAX_PROG_LEN];
 	int counter = 0;
 	int temp = 0;
-	char* head = "USE32\nglobal _start\nsection .rodata\nmemo_ovfl db 'Memory array overflow!'\nmemo_ovfl.l equ $ - memo_ovfl\nillg_ptr db 'Illegal memory pointer position!'\nillg_ptr.l equ $ - illg_ptr\nno_match db 'No matching parenthese!'\nno_match.l equ $ - no_match\nsection .bss\nbuffer resb 1\nmemo_arr resb 500\nmemo_ptr resd 1\nsection .text\n_start:\nmov ebp, esp\nmov eax, memo_arr\nmov [memo_ptr], eax";
+	char* head = "USE32\nglobal _start\nsection .rodata\nmemo_ovfl db 'Memory array overflow!'\nmemo_ovfl.l equ $ - memo_ovfl\nillg_ptr db 'Illegal memory pointer position!'\nillg_ptr.l equ $ - illg_ptr\nno_match db 'No matching parenthese!'\nno_match.l equ $ - no_match\nsection .bss\nbuffer resb 1\nmemo_arr resb 500\nmemo_ptr resd 1\nsection .text\n_start:\nmov ebp, esp\nmov eax, memo_arr\nmov [memo_ptr], eax\n";
+	char* inc_ptr = "inc dword [memo_ptr]\npush	memo_ovfl.l\npush memo_ovfl\ncmp dword [memo_ptr], prog_ptr\njae error\nadd esp, 0x8\n";
+	char* dec_ptr = "dec dword [memo_ptr]\npush illg_ptr.l\npush illg_ptr\ncmp dword [memo_ptr], memo_arr\njb error\nadd esp, 0x8\n";
+	char* inc_val = "mov ebx, [memo_ptr]\ninc byte [ebx]";
+	char* dec_val = "mov ebx, [memo_ptr]\ndec byte [ebx]";
+	char* out_val = "push dword [memo_ptr]\nmov eax, 4\nmov ebx, 1\npop ecx\nmov edx, 1\nint	0x80\n";
+	char* in_val = "mov eax, 3\nmov ebx, 1\nmov ecx, buffer\nmov edx, 1\nint 0x80\nmov eax, buffer\nmov al, [eax]\nmov ebx, [memo_ptr]\nmov [ebx], al";
+	char* jmp_fwd = "";
+	char* jmp_bck = "";
+	
 	while (temp != '#') {
 		temp = getchar();
-		instruction[counter] = temp;
-		counter++;
+		if (temp != 0x9 && temp != 0xa && temp != 0xd && temp != 0x20) {
+			instruction[counter] = temp;
+			counter++;
+		}
 	}
 	
 	printf(head);
-	
+	counter = 0;
+	temp = 0;
+	while (temp != '#') {
+		temp = instruction[counter];
+		switch (temp) {
+			case '>':
+				printf(inc_ptr);
+				break;
+			case '<':
+				printf(inc_ptr);
+				break;
+			case '+':
+				printf(inc_ptr);
+				break;
+			case '-':
+				printf(inc_ptr);
+				break;
+			case '.':
+				printf(inc_ptr);
+				break;
+			case ',':
+				printf(inc_ptr);
+				break;
+			case '[':
+				printf(inc_ptr);
+				break;
+			case ']':
+				printf(inc_ptr);
+				break;
+			default:
+				break;
+		}
+		counter++;
+	}
 	
 	return 0;
 }
