@@ -137,13 +137,8 @@ read_program:
 	cmp		eax, 1
 	cmp		eax, 2
 	je		.done_read		; done reading if end instruction is found
-
-	; handle error of unrecognized instruction
-	push	unrec.l
-	push	unrec
 	cmp		eax, 3
-	je		.error
-	add		esp, 0x8
+	je		.read
 
 	mov		eax, [esp]		; get pointer to read-in byte
 	mov		al, [eax]		; store read-in byte in al
