@@ -9,16 +9,17 @@
 #include <stdlib.h>
 #define	true 1
 #define false 0
+#define MAX_PROG_LEN 10000000
 
 int main(void) {
-	const int MAX_PROG_LEN = 500;
-	int instruction[MAX_PROG_LEN];
+	static char instruction[MAX_PROG_LEN];
 	int counter = 0;
-	int p_array[1000000];
+	static int p_array[MAX_PROG_LEN];
 	int p_pointer = 0;
 	int p_counter = 0;
 	char temp = 0;
-	char* head = "USE32\nglobal _start\nsection .rodata\nmemo_ovfl db 'Memory array overflow!'\nmemo_ovfl.l equ $ - memo_ovfl\nillg_ptr db 'Illegal memory pointer position!'\nillg_ptr.l equ $ - illg_ptr\nno_match db 'No matching parenthese!'\nno_match.l equ $ - no_match\nsection .bss\nbuffer resb 1\nmemo_arr resb 1000000\nmemo_ptr resd 1\nboundary resd 1\nsection .text\n_start:\nmov ebp, esp\nmov eax, memo_arr\nmov [memo_ptr], eax\n";
+	char* head_0 = "USE32\nglobal _start\nsection .rodata\nmemo_ovfl db 'Memory array overflow!'\nmemo_ovfl.l equ $ - memo_ovfl\nillg_ptr db 'Illegal memory pointer position!'\nillg_ptr.l equ $ - illg_ptr\nno_match db 'No matching parenthese!'\nno_match.l equ $ - no_match\nsection .bss\nbuffer resb 1\nmemo_arr resb ";
+	char* head_1 = "\nmemo_ptr resd 1\nboundary resd 1\nsection .text\n_start:\nmov ebp, esp\nmov eax, memo_arr\nmov [memo_ptr], eax\n";
 	char* foot = "mov ebx, 0\nmov eax, 1\nint 0x80\nerror:\nmov eax, 4\nmov ebx, 1\npop ecx\npop edx\nint 0x80\nmov ebx, 1\nmov eax, 1\nint 0x80\n";
 	char* inc_ptr = "inc dword [memo_ptr]\npush	memo_ovfl.l\npush memo_ovfl\ncmp dword [memo_ptr], boundary\njae error\nadd esp, 0x8\n";
 	char* dec_ptr = "dec dword [memo_ptr]\npush illg_ptr.l\npush illg_ptr\ncmp dword [memo_ptr], memo_arr\njb error\nadd esp, 0x8\n";
@@ -38,10 +39,14 @@ int main(void) {
 		if (temp != 0x9 && temp != 0xa && temp != 0xd && temp != 0x20) {
 			instruction[counter] = temp;
 			counter++;
+			if (counter == MAX_PROG_LEN) {
+				printf("Program array overflow!");
+				exit(1);
+			}
 		}
 	}
 	
-	printf(head);
+	printf("%s%d%s", head_0, MAX_PROG_LEN, head_1);
 	counter = 0;
 	temp = 0;
 	while (temp != '#') {

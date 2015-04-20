@@ -8,18 +8,17 @@ interpreter: interpreter.o
 	ld -melf_i386 interpreter.o -o $@
 
 interpreter.o: interpreter.s
-	nasm -f elf interpreter.s
+	nasm -f elf interpreter.s -Ov
 
 compiler: compiler.c
 	gcc -g -Wall compiler.c -o $@
 
-compile: compiler
+compile: clean compiler
 	compiler > $@
 
-run: compile
-	nasm -f elf compile
+run: clean compile
+	nasm -f elf compile -Ov
 	ld -melf_i386 compile.o -o $@
-	./run
 
 clean:
 	rm -f $(OBJECTS) $(OUTPUTS) $(BINARYS)
