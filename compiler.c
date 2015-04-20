@@ -46,6 +46,7 @@ int main(void) {
 	temp = 0;
 	while (temp != '#') {
 		temp = instruction[counter];
+		int mark;
 		switch (temp) {
 			case '>':
 				printf(inc_ptr);
@@ -67,14 +68,14 @@ int main(void) {
 				break;
 			case '[':
 				p_array[p_pointer] = p_counter;
-				int mark = p_array[p_pointer];
+				mark = p_array[p_pointer];
 				printf("%s%d%s%d%s", jmp_fwd_0, mark, jmp_fwd_1, mark, jmp_fwd_2);
 				p_pointer++;
 				p_counter++;
 				break;
 			case ']':
 				p_pointer--;
-				int mark = p_array[p_pointer];
+				mark = p_array[p_pointer];
 				printf("%s%d%s%d%s", jmp_bck_0, mark, jmp_bck_1, mark, jmp_bck_2);
 				break;
 			default:
