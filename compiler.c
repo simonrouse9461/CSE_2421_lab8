@@ -14,7 +14,7 @@ int main(void) {
 	const int MAX_PROG_LEN = 500;
 	int instruction[MAX_PROG_LEN];
 	int counter = 0;
-	char p_array[1000000];
+	int p_array[1000000];
 	int p_pointer = 0;
 	int p_counter = 0;
 	char temp = 0;
